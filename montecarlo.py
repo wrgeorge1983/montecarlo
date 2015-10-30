@@ -221,7 +221,7 @@ def play(initial_funds, initial_wager, wager_count, bettor_class, **kwargs):
 
 
 def mp_play(lose_multiple):
-    lose_multiple = round(random.uniform(1, 15), 1)
+    lose_multiple = round(random.uniform(3.5, 4.5), 1)
     args = [initial_funds, initial_wager, wager_count, bettor_class]
     kwargs = {'lose_multiple': lose_multiple}
     return [play(*args, **kwargs) for _ in range(player_sample_size)]
@@ -282,11 +282,11 @@ def print_stats(stats):
 #     player_groups.extend(pool.map(mp_play, range(int(sample_size))))
 
 
-wager_count = 100
+wager_count = 150
 initial_wager = 10
-initial_funds = 1000
-player_sample_size = 500
-scenario_sample_size = 1000
+initial_funds = 2000
+player_sample_size = 2000
+scenario_sample_size = 50
 # sample_size = 10000
 bettor_class = SimpleWorkingBettor
 
