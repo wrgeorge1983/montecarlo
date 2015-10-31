@@ -2,7 +2,7 @@ __author__ = 'William R. George'
 
 
 from functools import partial
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 import multiprocessing
 from pprint import pprint
 import statistics
@@ -27,9 +27,8 @@ def roll_against_midnight():
 def play(initial_funds, initial_wager, wager_count, bettor_class, game, **kwargs):
     player = bettor_class(initial_funds, initial_wager, game, **kwargs)
 
-    rolls = ((wager_number, roll_against_midnight()) for wager_number in range(wager_count))
-    for wager_number, roll in rolls:
-            _ = player.play(wager_number, roll)
+    for wager_number in range(wager_count):
+            _ = player.play(wager_number)
 
     return player
 
@@ -64,7 +63,7 @@ def calc_stats(player_group, max_death_rate=100):
             non_bust_nw_list.append(net_worth)
             if net_worth > initial_funds:
                 profit_nw_list.append(net_worth)
-
+        plt.plot(*split_points(player.networth_points))
         net_worth_list.append(player.net_worth)
 
     stats['death_rate'] = stats['dead'] / stats['members'] * 100.0
@@ -91,22 +90,17 @@ def print_stats(stats):
     print('  Profit Rate: {:.2f}%\t Avg Profiter\'s Net: ${:.2f}'.format(*args))
 
 
-# def run_scenario(pool):
-#     player_groups = []
-#     player_groups.extend(pool.map(mp_play, range(int(sample_size))))
-
-
-wager_count = 150
+wager_count = 50
 initial_wager = 1
-initial_funds = 10000
-player_sample_size = 100
-scenario_lbound = .1
-scenario_ubound = 10
+initial_funds = 2000
+player_sample_size = 10000
+scenario_lbound = 1.5
+scenario_ubound = 2.5
 scenario_increment = .1
 scenario_round_precision = 1
-
+scenarios = [round(scenario_lbound + (scenario_increment * increment), scenario_round_precision)
+             for increment in range(int(round((scenario_ubound - scenario_lbound)/scenario_increment, scenario_round_precision)))]
 scenario_sample_size = 500
-# sample_size = 10000
 bettor_class = SimpleWorkingBettor
 game = games.SimpleRoulette()
 
@@ -115,26 +109,31 @@ if __name__ == '__main__':
     pool = multiprocessing.Pool(processes=6)
 
     divisions = 10
+    div_increment = len(scenarios) // divisions
     stats_list = []
     rt_start = time()
     for div in range(1, divisions+1):
         drt_start = time()
         player_groups = []
+
+        div_lbound = (div - 1) * div_increment
+        div_ubound = div_lbound + div_increment
+        div_scenarios = scenarios[div_lbound:div_ubound]
         player_groups.extend(pool.map(mp_play,
-                                      range(int(scenario_sample_size/divisions))))
+                                      div_scenarios))
         drt_end = time()
         drt = drt_end - drt_start
         print("betting over for division {}/{} after {:.3f} seconds".format(div,
                                                                             divisions,
                                                                             drt))
-        stats_list.extend([calc_stats(player_group, max_death_rate=50)
+        stats_list.extend([calc_stats(player_group, max_death_rate=100)
                            for player_group in player_groups])
         del player_groups
     rt_end = time()
     rt = rt_end - rt_start
     print('Total betting time: {:.3f} seconds'.format(rt))
     for stats in stats_list:
-        if stats['death_rate'] < 100:  # and stats['profit_rate'] >= 25:
+        if stats['death_rate'] < 50 and stats['profit_rate'] >= 25:
             print_stats(stats)
 
     # for player_group in player_groups:
@@ -173,6 +172,7 @@ if __name__ == '__main__':
     try:
         plt.ylabel('Net Worth')
         plt.xlabel('Wager Count')
+        plt.show()
     except:
         pass
     # plt.show()

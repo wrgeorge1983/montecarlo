@@ -73,7 +73,7 @@ class SimpleWorkingBettor(SimpleMartingaleBettor):
 
     def determine_wager(self):
         wager = super().determine_wager()
-        return wager
+        return round(min(wager, 50))
 
 
 class SimpleBankingWorkingBettor(BankingBettor, SimpleWorkingBettor):

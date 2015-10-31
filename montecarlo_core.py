@@ -70,8 +70,8 @@ class Bettor(object):
 
         wager = self.determine_wager()
         self.current_funds -= wager
-
         self.game.wager(wager, 17)
+        self.current_funds -= wager
         self.game.wager(wager, 24)
 
         winnings, roll = self.game.play(roll)
@@ -86,7 +86,9 @@ class Bettor(object):
         self.last_winnings = winnings
         self.last_wager = wager
         if self.verbose:
-            print("NW:  {:.2f}\tFunds:  {:.2f}\twagered:  {:.2f}\trolled:  {}\twon:  {:.2f}".format(wager,
+            print("NW:  {:.2f}\tFunds:  {:.2f}\twagered:  {:.2f}\trolled:  {}\twon:  {:.2f}".format(self.net_worth,
+                                                                                                    self.current_funds,
+                                                                                                    wager,
                                                                                                     roll, winnings))
 
         return self.current_funds, roll # for easy plotting
