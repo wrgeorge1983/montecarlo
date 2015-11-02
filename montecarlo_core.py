@@ -51,7 +51,7 @@ class Bettor(object):
         self.networth_points = []
         self.last_winnings = True
         self.__class__.members += 1
-        self.game = game
+        self.game = game()
         self.verbose = False
 
     @property

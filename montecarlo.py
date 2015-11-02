@@ -9,6 +9,7 @@ import statistics
 from time import time
 from timeit import timeit
 import random
+import zmq
 
 import games
 from martingale_bettors import *
@@ -27,6 +28,8 @@ def roll_against_midnight():
 def play(initial_funds, initial_wager, wager_count, bettor_class, game, **kwargs):
     player = bettor_class(initial_funds, initial_wager, game, **kwargs)
 
+    player.wager_count = wager_count  # just for later inspection
+
     for wager_number in range(wager_count):
             _ = player.play(wager_number)
 
@@ -44,8 +47,13 @@ def mp_play(lose_multiple):
 def calc_stats(player_group, max_death_rate=100):
     stats = {}
     player = player_group[0]
-    stats['class_name'] = player.__class__.__name__
-    stats['lose_multiple'] = player.lose_multiple
+    # stats['class_name'] = player.__class__.__name__
+    stats['class_name'] = player['class_name']
+    stats['wager_count'] = player['wager_count']
+    stats['initial_funds'] = player['initial_funds']
+    stats['initial_wager'] = player['initial_wager']
+
+    stats['lose_multiple'] = player.get('lose_multiple', 1)
 
     stats['members'] = 0
     stats['dead'] = 0
@@ -56,15 +64,15 @@ def calc_stats(player_group, max_death_rate=100):
 
     for player in player_group:
         stats['members'] += 1
-        net_worth = player.net_worth
+        net_worth = player['net_worth']
         if net_worth <= 0:
             stats['dead'] += 1
         else:
             non_bust_nw_list.append(net_worth)
             if net_worth > initial_funds:
                 profit_nw_list.append(net_worth)
-        plt.plot(*split_points(player.networth_points))
-        net_worth_list.append(player.net_worth)
+        plt.plot(*split_points(player['networth_points']))
+        net_worth_list.append(net_worth)
 
     stats['death_rate'] = stats['dead'] / stats['members'] * 100.0
     stats['avg_nw'] = statistics.mean(net_worth_list) if net_worth_list else 0
