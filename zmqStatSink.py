@@ -51,10 +51,10 @@ def startup():
 
     print("Building connections.")
     worker = context.socket(zmq.PULL)
-    worker.bind('tcp://*:5558')
+    worker.bind('tcp://*:5061')
 
-    sink = context.socket(zmq.PUSH)
-    sink.connect('tcp://localhost:5559')
+    # sink = context.socket(zmq.PUSH)
+    # sink.connect('tcp://localhost:5559')
     print("Connections complete.")
 
     start_time = time.time()
@@ -70,16 +70,14 @@ def startup():
 
         output_queue.append(stats)
         curtime = time.time()
-        if ((curtime - last_write) > 10) and output_queue:
+        msg_count += 1
+        if ((curtime - last_write) > 5) and output_queue:
             write_out(output_queue)
             output_queue = []
             last_write = curtime
-
-        msg_count += 1
-        if not msg_count % 100:
             elapsed = curtime - start_time
             msg_rate = round(msg_count / elapsed, 3)
-            print('processed {} messages per second'.format(msg_rate))
+            print('processed {:.3} messages per second'.format(msg_rate))
             start_time = curtime
             msg_count = 0
 

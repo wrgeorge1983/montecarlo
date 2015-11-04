@@ -95,21 +95,62 @@ class Bettor(object):
 
 
 class BankingBettor(Bettor):
+    """
     threshold_multiplier = 1.2 # start banking when we're at
     # `threshold_multiplier * initial_funds`
     banking_rate = .02 # how much to bank when we bank
+    """
+
+    # define these here so we can use them in random.choice later!
+    threshold_targets = ['current_funds', 'net_worth']
+    banking_targets = ['current_funds', 'net_worth',
+                       'current_funds_gains', 'net_worth_gains',
+                       'threshold_target_gains', 'threshold_target_over_threshold']
+
+    def __init__(self, *args,
+                 threshold_multiplier=1.2, threshold_target='current_funds',
+                 banking_rate=0.2, banking_target='current_funds',
+                 **kwargs):
+
+        self.threshold_multiplier = threshold_multiplier
+        self.threshold_target = threshold_target
+        self.banking_rate = banking_rate
+        self.banking_target = banking_target
+        super().__init__(*args, **kwargs)
 
     def play(self, wager_number, roll=None):  #:bool=None):
         super().play(wager_number, roll)
         threshold = self.initial_funds * self.threshold_multiplier
-        if self.current_funds >= threshold:
-            deposit = (self.current_funds - threshold) * self.banking_rate
+
+        tt = self.threshold_target
+        if tt == 'current_funds':
+            threshold_target = self.current_funds
+        elif tt == 'net_worth':
+            threshold_target = self.net_worth
+        else:
+            raise ValueError('threshold_target is nonsense: {}'.format(tt))
+
+        bt = self.banking_target
+        if bt == 'current_funds':
+            banking_target = self.current_funds
+        elif bt == 'net_worth':
+            banking_target = self.net_worth
+        elif bt == 'current_funds_gains':
+            banking_target = self.current_funds - self.initial_funds
+        elif bt == 'net_worth_gains':
+            banking_target = self.net_worth - self.initial_funds
+        elif bt == 'threshold_target_gains':
+            banking_target = threshold_target - self.initial_funds
+        elif bt == 'threshold_target_over_threshold':
+            banking_target = threshold_target - threshold
+        else:
+            raise ValueError('banking_target is nonsense: {}'.format(bt))
+
+        if threshold_target > threshold:
+            deposit = banking_target * self.banking_rate
             self.current_funds -= deposit
             self.bank += deposit
         # since we're assumed dead in Bettor.play() we plot ourselves here if
         # we have a positive networth but no current_funds
         if (self.current_funds <= 0) and (self.net_worth > 0):
             self.networth_points.append((wager_number, self.net_worth))
-
-
-

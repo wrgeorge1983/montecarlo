@@ -2,7 +2,10 @@ __author__ = 'William R. George'
 
 
 from functools import partial
-from matplotlib import pyplot as plt
+try:
+    from matplotlib import pyplot as plt
+except ImportError:
+    pass
 import multiprocessing
 from pprint import pprint
 import statistics
@@ -71,7 +74,10 @@ def calc_stats(player_group, max_death_rate=100):
             non_bust_nw_list.append(net_worth)
             if net_worth > initial_funds:
                 profit_nw_list.append(net_worth)
-        plt.plot(*split_points(player['networth_points']))
+        try:
+            plt.plot(*split_points(player['networth_points']))
+        except NameError:
+            pass
         net_worth_list.append(net_worth)
 
     stats['death_rate'] = stats['dead'] / stats['members'] * 100.0
@@ -181,6 +187,6 @@ if __name__ == '__main__':
         plt.ylabel('Net Worth')
         plt.xlabel('Wager Count')
         plt.show()
-    except:
+    except NameError:
         pass
     # plt.show()

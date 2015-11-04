@@ -58,10 +58,10 @@ def startup():
 
     print("Building connections.")
     worker = context.socket(zmq.PUSH)
-    worker.bind('tcp://*:5557')
+    worker.bind('tcp://*:5060')
 
     stat_sink = context.socket(zmq.PUSH)
-    stat_sink.connect('tcp://localhost:5558')
+    stat_sink.connect('tcp://localhost:5061')
     print("Connections complete.")
 
     start_time = time.time()
@@ -88,21 +88,23 @@ def startup():
     task_count = 1
     while True:
         if not msg_count % task_count:
+            msg_count = 0
             prompt = 'Enter the number of tasks to send.'
             task_count = safe_input(int, prompt)
+            start_time = time.time()
 
         # worker.send_json(namespace)
         snd_wrap(worker.send_json, namespace)
         print('Task #{} Sent.'.format(msg_count))
 
         msg_count += 1
-        if not msg_count % 100:
-            end_time = time.time()
-            elapsed = end_time - start_time
+        end_time = time.time()
+        elapsed = end_time - start_time
+        try:
             msg_rate = round(msg_count / elapsed, 3)
-            print('Sent {} messages per second'.format(msg_rate))
-            start_time = end_time
-            msg_count = 0
+        except ZeroDivisionError:
+            msg_rate = 0
+        print('Sent {} messages per second'.format(msg_rate))
 
 
 
