@@ -76,6 +76,35 @@ def process_message_out(player_group):
 
     return [player.__dict__ for player in player_group]
 
+def process_message_out_bpf(**kwargs):
+    for player in kwargs['player_group']:
+        player['net_worth'] = player['current_funds'] + player['bank_balance']
+
+    return kwargs['player_group']
+
+def message_handler_class(message):
+    player_parameters = message.pop('player_parameters')
+    game_parameters = message.pop('game_parameters')
+    wager_count = message.pop('wager_count')
+    sample_size = message.pop('sample_size')
+
+    player_class=player_class_tags[player_parameters.pop('player_class')]
+    player_parameters['bettor_class'] = player_class
+    player_parameters['game'] = game_class_tags[game_parameters['game_name']]
+    player_parameters['wager_count'] = wager_count
+
+    player_group = [montecarlo.play(**player_parameters)
+                    for _ in range(sample_size)]
+
+    message_out = process_message_out(player_group)
+    message_out = montecarlo.calc_stats(message_out)
+    return message_out
+
+def message_handler_func(message):
+    kwargs = message['bpf_kwargs']
+    kwargs = montecarlo_core.basic_player_func(**kwargs)
+    message_out =
+    return message_out
 
 def startup():
     context = zmq.Context()
@@ -94,21 +123,14 @@ def startup():
     while True:
         message = rcv_wrap(vent)  # this will block forever, which is okay. But it still
                                   # permits signal handling.
-        player_parameters = message.pop('player_parameters')
-        game_parameters = message.pop('game_parameters')
-        wager_count = message.pop('wager_count')
-        sample_size = message.pop('sample_size')
 
-        player_class=player_class_tags[player_parameters.pop('player_class')]
-        player_parameters['bettor_class'] = player_class
-        player_parameters['game'] = game_class_tags[game_parameters['game_name']]
-        player_parameters['wager_count'] = wager_count
+        try:
+            message['bpf_kwargs']
+        except KeyError:
+            message_out = message_handler_class(message)
+        else:
+            message_out = message_handler_func(message)
 
-        player_group = [montecarlo.play(**player_parameters)
-                        for _ in range(sample_size)]
-
-        message_out = process_message_out(player_group)
-        message_out = montecarlo.calc_stats(message_out)
         snd_wrap(stat_sink.send_json, message_out)
         # pprint(player_group[0].__dict__)
 

@@ -52,6 +52,20 @@ def safe_input(rtype, prompt=None):
         else:
             return user_input
 
+bpf_kwargs = {
+    'game': 'bpf_midnight_craps',
+    'game_sample_size': 1000,
+    'rounds_per_game': 200,
+    'progression': False,
+    'bank': False,
+    'initial_wager': 5,
+    'initial_funds': 2000,
+    'bank_balance': 0,
+    'progression_type': 'unit', # 'unit' or 'ratio'
+    'progression_interval': 5,  # set these to zero when not progressing
+    'progression_amt': 5
+}
+
 
 def startup():
     context = zmq.Context()

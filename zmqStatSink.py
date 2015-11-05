@@ -67,11 +67,11 @@ def startup():
                                     # signal handling.
         stats = message # calc_stats(message)
         print(message)
-        output_queue.append(stats)
+        # output_queue.append(stats)
         curtime = time.time()
         msg_count += 1
         if ((curtime - last_write) > 5) and output_queue:
-            write_out(output_queue)
+            # write_out(output_queue)
             output_queue = []
             last_write = curtime
             elapsed = curtime - start_time
