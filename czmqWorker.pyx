@@ -82,7 +82,7 @@ def startup():
 
     print("Building connections.")
     vent = context.socket(zmq.PULL)
-    vent.connect('tcp:{}//:{}'.format(HOMEIP, BASEPORT + 0))
+    vent.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 0))
 
     stat_sink = context.socket(zmq.PUSH)
     stat_sink.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 1))
