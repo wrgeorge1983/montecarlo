@@ -24,6 +24,9 @@ game_class_tags = {
     games.MidnightCraps: 'midnight_craps',
 }
 
+HOMEIP = "69.247.73.73"
+BASEPORT = 5060
+
 
 def rcv_wrap(vent):
     """
@@ -79,10 +82,10 @@ def startup():
 
     print("Building connections.")
     vent = context.socket(zmq.PULL)
-    vent.connect('tcp://161.217.106.6:5060')
+    vent.connect('tcp:{}//:{}'.format(HOMEIP, BASEPORT + 0))
 
     stat_sink = context.socket(zmq.PUSH)
-    stat_sink.connect('tcp://161.217.106.6:5061')
+    stat_sink.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 1))
     print("Connections complete.")
 
     start_time = time.time()
