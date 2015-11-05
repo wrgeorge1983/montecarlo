@@ -65,9 +65,8 @@ def startup():
     while True:
         message = rcv_wrap(worker)  # should block but still permit
                                     # signal handling.
-
-        stats = calc_stats(message)
-
+        stats = message # calc_stats(message)
+        print(message)
         output_queue.append(stats)
         curtime = time.time()
         msg_count += 1

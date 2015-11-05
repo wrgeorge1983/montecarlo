@@ -105,6 +105,7 @@ def startup():
                         for _ in range(sample_size)]
 
         message_out = process_message_out(player_group)
+        message_out = montecarlo.calc_stats(message_out)
         snd_wrap(stat_sink.send_json, message_out)
         # pprint(player_group[0].__dict__)
 
