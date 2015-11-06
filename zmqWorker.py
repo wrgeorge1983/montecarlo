@@ -123,10 +123,10 @@ def startup():
     # vent.setsockopt(zmq.RCVBUF, 10)
     # vent.setsockopt(zmq.HWM, 1)
 
-    vent.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 0))
+    vent.connect('tcp://{}:{}'.format(HOMEIP, str(BASEPORT + 0)))
 
     stat_sink = context.socket(zmq.PUSH)
-    stat_sink.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 1))
+    stat_sink.connect('tcp://{}:{}'.format(HOMEIP, str(BASEPORT + 1)))
     print("Connections complete.")
 
     start_time = time.time()
