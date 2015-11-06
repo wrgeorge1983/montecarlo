@@ -93,7 +93,50 @@ def bpf_midnight_craps_round(**kwargs):
     progression_type = kwargs['progression_type']  #'unit', 'ratio', None
     progression_amt = kwargs['progression_amt']  #amount to add or multiply
     progression_interval = kwargs['progression_interval']  # number of losses
-    if not round_number % progression_interval and progression_amt:
+    if progression_amt and not round_number % progression_interval:
+        if progression_type == 'unit':
+            if not round_number % progression_interval:
+                current_wager = last_wager + progression_amt
+        elif progression_type == 'ratio':
+            if not round_number % progression_interval:
+                current_wager = last_wager * progression_amt
+    current_wager = max(0, current_wager)
+
+    current_funds -= current_wager
+
+    # roll dice
+    dice = random.randint(1, 6), random.randint(1, 6)
+    if sum(dice) == 12:
+        winnings = current_wager * odds
+    else:
+        winnings = 0
+
+    current_funds += winnings
+
+    kwargs['last_wager'] = current_wager
+    kwargs['last_winnings'] = winnings
+
+    kwargs['current_funds'] = current_funds
+    kwargs['net_worth_points'].append((round_number, current_funds))
+    kwargs['net_worth'] = current_funds
+    return kwargs
+
+
+def bpf_mg_midnight_craps_round(**kwargs):
+    current_funds = kwargs['current_funds']
+    if current_funds <= 0:
+        return kwargs
+    current_wager = kwargs['current_wager']
+    last_wager = kwargs['last_wager']
+    last_winnings = kwargs['last_winnings']
+    round_number = kwargs['current_round']
+    odds = 30
+
+    # place bet
+    progression_type = kwargs['progression_type']  #'unit', 'ratio', None
+    progression_amt = kwargs['progression_amt']  #amount to add or multiply
+    progression_interval = kwargs['progression_interval']  # number of losses
+    if progression_amt and not round_number % progression_interval and not last_winnings:
         if progression_type == 'unit':
             if not round_number % progression_interval:
                 current_wager = last_wager + progression_amt

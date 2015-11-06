@@ -54,7 +54,7 @@ def safe_input(rtype, prompt=None):
             return user_input
 
 default_bpf_kwargs = {
-    'game': 'bpf_midnight_craps',
+    'game': 'bpf_mg_midnight_craps_round',
     'game_sample_size': 5000,
     'rounds_per_game': 200,
     #'progression': False,
@@ -69,6 +69,7 @@ default_bpf_kwargs = {
 
 def randomize(kwargs):
     randomize_keys = [
+        'game_sample_size',
         'initial_wager',
         'progression_type',
         'progression_interval',
@@ -76,7 +77,9 @@ def randomize(kwargs):
     ]
 
     for key in randomize_keys:
-        if key == 'initial_wager':
+        if key == 'game_sample_size':
+            val = random.randint(50, 500)
+        elif key == 'initial_wager':
             val = random.randint(1, 200)
         elif key == 'progression_type':
             val = random.choice((['unit', 'ratio'] * 50) + [None])
