@@ -44,7 +44,7 @@ def rcv_wrap(vent):
                                         # signal handling, i.e. respond to
                                         # Ctrl-C on Windows
         except zmq.ZMQError:
-            time.sleep(0.001)  # wait one millisecond before checking again
+            time.sleep(0.1)  # wait one hundred milliseconds before checking again
         else:
             return o
 
