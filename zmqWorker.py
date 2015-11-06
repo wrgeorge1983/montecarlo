@@ -29,7 +29,7 @@ BASEPORT = 5060
 try:
     import zmqConstants
     HOMEIP = zmqConstants.HOMEIP
-    BASEPORT = zmqConstants.HOMEIP
+    BASEPORT = zmqConstants.BASEPORT
 except ImportError:
     pass
 
