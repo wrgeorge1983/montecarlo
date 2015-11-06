@@ -120,8 +120,8 @@ def startup():
 
     print("Building connections.")
     vent = context.socket(zmq.PULL)
-    vent.setsockopt(zmq.RCVBUF, 10)
-    vent.setsockopt(zmq.HWM, 1)
+    # vent.setsockopt(zmq.RCVBUF, 10)
+    # vent.setsockopt(zmq.HWM, 1)
 
     vent.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 0))
 
