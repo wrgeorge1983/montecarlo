@@ -15,8 +15,8 @@ import random
 import zmq
 
 import games
-from martingale_bettors import *
-from montecarlo_core import *
+from martingale_bettors import SimpleWorkingBettor
+from montecarlo_core import basic_player_func
 
 
 def roll_craps():
@@ -89,6 +89,37 @@ def calc_stats(player_group, max_death_rate=100):
 
     return stats
 
+def calc_stats_bpf(**kwargs):
+    stats = kwargs
+
+
+    net_worth_list = []
+    non_bust_nw_list = []
+    profit_nw_list = []
+    stats['members'] = stats['dead'] = 0
+
+    for player in stats['player_group']:
+        stats['members'] += 1
+        net_worth = player['net_worth']
+        if net_worth <= 0:
+            stats['dead'] += 1
+        else:
+            non_bust_nw_list.append(net_worth)
+            if net_worth > initial_funds:
+                profit_nw_list.append(net_worth)
+        del player['net_worth_points']
+        net_worth_list.append(net_worth)
+
+    stats['death_rate'] = stats['dead'] / stats['members'] * 100.0
+    stats['avg_nw'] = statistics.mean(net_worth_list) if net_worth_list else 0
+    stats['avg_nb_nw'] = statistics.mean(non_bust_nw_list) if non_bust_nw_list else 0
+
+    stats['profit_rate'] = len(profit_nw_list) / stats['members'] * 100
+    stats['avg_p_nw'] = statistics.mean(profit_nw_list) if profit_nw_list else 0
+
+    del stats['player_group']
+
+    return stats
 
 def print_stats(stats):
     args = stats['class_name'], stats['lose_multiple']

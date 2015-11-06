@@ -15,11 +15,15 @@ from zmqVent import snd_wrap, safe_input
 
 output_filename = 'stats.csv'
 output_fieldnames = [
-    'class_name',
-    'wager_count',
+    'game',
+    'rounds_per_game',
     'initial_funds',
     'initial_wager',
-    'lose_multiple',
+    'progression_type',
+    'progression_interval',
+    'progression_amt',
+    'bank',
+    'bank_rate',
     'members',
     'dead',
     'death_rate',
@@ -66,12 +70,11 @@ def startup():
         message = rcv_wrap(worker)  # should block but still permit
                                     # signal handling.
         stats = message # calc_stats(message)
-        print(message)
-        # output_queue.append(stats)
+        output_queue.append(stats)
         curtime = time.time()
         msg_count += 1
         if ((curtime - last_write) > 5) and output_queue:
-            # write_out(output_queue)
+            write_out(output_queue)
             output_queue = []
             last_write = curtime
             elapsed = curtime - start_time

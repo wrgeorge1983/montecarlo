@@ -3,6 +3,7 @@ __author__ = 'William.George'
 from decimal import Decimal as D
 import json
 from pprint import pprint
+import random
 import time
 import zmq
 
@@ -52,19 +53,43 @@ def safe_input(rtype, prompt=None):
         else:
             return user_input
 
-bpf_kwargs = {
+default_bpf_kwargs = {
     'game': 'bpf_midnight_craps',
-    'game_sample_size': 1000,
+    'game_sample_size': 5000,
     'rounds_per_game': 200,
-    'progression': False,
+    #'progression': False,
     'bank': False,
     'initial_wager': 5,
     'initial_funds': 2000,
     'bank_balance': 0,
-    'progression_type': 'unit', # 'unit' or 'ratio'
+    'progression_type': 'ratio', # 'unit' or 'ratio' or None
     'progression_interval': 5,  # set these to zero when not progressing
-    'progression_amt': 5
+    'progression_amt': 20,
 }
+
+def randomize(kwargs):
+    randomize_keys = [
+        'initial_wager',
+        'progression_type',
+        'progression_interval',
+        'progression_amt'
+    ]
+
+    for key in randomize_keys:
+        if key == 'initial_wager':
+            val = random.randint(1, 200)
+        elif key == 'progression_type':
+            val = random.choice((['unit', 'ratio'] * 50) + [None])
+        elif key == 'progression_interval':
+            val = random.randint(1, 20)
+        elif key == 'progression_amt':
+            val = round(random.uniform(1, 10), 1)
+        kwargs[key] = val
+
+    if kwargs['progression_type'] is None:
+        kwargs['progression_amt'] = kwargs['progression_interval'] = 0
+
+    return kwargs
 
 
 def startup():
@@ -93,12 +118,14 @@ def startup():
     sample_size = 100
 
     namespace = {
-        'player_parameters': player_parameters,
-        'game_parameters': game_parameters,
-        'rolls': rolls,
-        'wager_count': wager_count,
-        'sample_size': sample_size
+        #'player_parameters': player_parameters,
+        #'game_parameters': game_parameters,
+        #'rolls': rolls,
+        #'wager_count': wager_count,
+        #'sample_size': sample_size,
+        'bpf_kwargs': default_bpf_kwargs
     }
+    # namespace['bfp_kwargs'] = randomize(namespace['bpf_kwargs'])
     task_count = 1
     while True:
         if not msg_count % task_count:
@@ -108,6 +135,7 @@ def startup():
             start_time = time.time()
 
         # worker.send_json(namespace)
+        namespace['bfp_kwargs'] = randomize(namespace['bpf_kwargs'])
         snd_wrap(worker.send_json, namespace)
         print('Task #{} Sent.'.format(msg_count))
 

@@ -24,9 +24,14 @@ game_class_tags = {
     games.MidnightCraps: 'midnight_craps',
 }
 
-HOMEIP = "69.247.73.73"
+HOMEIP = 'localhost' # "69.247.73.73"
 BASEPORT = 5060
-
+try:
+    import zmqConstants
+    HOMEIP = zmqConstants.HOMEIP
+    BASEPORT = zmqConstants.HOMEIP
+except ImportError:
+    pass
 
 def rcv_wrap(vent):
     """
@@ -103,7 +108,11 @@ def message_handler_class(message):
 def message_handler_func(message):
     kwargs = message['bpf_kwargs']
     kwargs = montecarlo_core.basic_player_func(**kwargs)
-    message_out =
+    # print('*'*300)
+    # input()
+    message_out = montecarlo.calc_stats_bpf(**kwargs)
+    print(message_out)
+    # print('\n'*20)
     return message_out
 
 def startup():
@@ -111,6 +120,9 @@ def startup():
 
     print("Building connections.")
     vent = context.socket(zmq.PULL)
+    vent.setsockopt(zmq.RCVBUF, 10)
+    vent.setsockopt(zmq.HWM, 1)
+
     vent.connect('tcp://{}:{}'.format(HOMEIP, BASEPORT + 0))
 
     stat_sink = context.socket(zmq.PUSH)
