@@ -111,7 +111,7 @@ def message_handler_func(message):
     # print('*'*300)
     # input()
     message_out = montecarlo.calc_stats_bpf(**kwargs)
-    print(message_out)
+    # print(message_out)
     # print('\n'*20)
     return message_out
 
