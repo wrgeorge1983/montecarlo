@@ -30,7 +30,7 @@ try:
     import zmqConstants
     HOMEIP = zmqConstants.HOMEIP
     BASEPORT = zmqConstants.BASEPORT
-except ImportError:
+except (ImportError, AttributeError):
     pass
 
 def rcv_wrap(vent):

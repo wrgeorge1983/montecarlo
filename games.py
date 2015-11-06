@@ -122,7 +122,26 @@ def bpf_midnight_craps_round(**kwargs):
     return kwargs
 
 
+def bpf_mg_midnight_craps_game(**kwargs):
+    initial_wager = kwargs['initial_wager']
+    initial_funds = kwargs['initial_funds']
+    kwargs['current_funds'] = initial_funds
+    kwargs['current_wager'] = initial_wager
+    kwargs['last_winnings'] = kwargs['last_wager'] = 0
+    kwargs['net_worth_points'] = []
+
+    rounds_per_game = kwargs['rounds_per_game']
+    g_rounds = range(1, rounds_per_game + 1)
+
+    for round_number in g_rounds:
+        kwargs['current_round'] = round_number
+        kwargs = bpf_mg_midnight_craps_round(**kwargs)
+
+    return kwargs
+
+
 def bpf_mg_midnight_craps_round(**kwargs):
+    from pprint import pprint
     current_funds = kwargs['current_funds']
     if current_funds <= 0:
         return kwargs
