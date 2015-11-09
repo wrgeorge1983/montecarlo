@@ -172,6 +172,7 @@ def bpf_mg_midnight_craps_round(**kwargs):
     dice = random.randint(1, 6), random.randint(1, 6)
     if sum(dice) == 12:
         winnings = current_wager * odds
+        losing_streak = 0
     else:
         winnings = 0
         losing_streak += 1
