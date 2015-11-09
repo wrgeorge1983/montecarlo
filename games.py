@@ -132,6 +132,7 @@ def bpf_mg_midnight_craps_game(**kwargs):
 
     rounds_per_game = kwargs['rounds_per_game']
     g_rounds = range(1, rounds_per_game + 1)
+    kwargs['losing_streak'] = 1
 
     for round_number in g_rounds:
         kwargs['current_round'] = round_number
@@ -149,20 +150,21 @@ def bpf_mg_midnight_craps_round(**kwargs):
     last_wager = kwargs['last_wager']
     last_winnings = kwargs['last_winnings']
     round_number = kwargs['current_round']
+    losing_streak = kwargs['losing_streak']
     odds = 30
 
     # place bet
     progression_type = kwargs['progression_type']  #'unit', 'ratio', None
     progression_amt = kwargs['progression_amt']  #amount to add or multiply
     progression_interval = kwargs['progression_interval']  # number of losses
-    if progression_amt and not round_number % progression_interval and not last_winnings:
+    if progression_amt and not losing_streak % progression_interval and not last_winnings:
         if progression_type == 'unit':
             if not round_number % progression_interval:
                 current_wager = last_wager + progression_amt
         elif progression_type == 'ratio':
             if not round_number % progression_interval:
                 current_wager = last_wager * progression_amt
-    current_wager = max(0, current_wager)
+    current_wager = min(current_funds, current_wager)
 
     current_funds -= current_wager
 
@@ -172,6 +174,7 @@ def bpf_mg_midnight_craps_round(**kwargs):
         winnings = current_wager * odds
     else:
         winnings = 0
+        losing_streak += 1
 
     current_funds += winnings
 
@@ -181,6 +184,7 @@ def bpf_mg_midnight_craps_round(**kwargs):
     kwargs['current_funds'] = current_funds
     kwargs['net_worth_points'].append((round_number, current_funds))
     kwargs['net_worth'] = current_funds
+    kwargs['losing_streak'] = losing_streak
     return kwargs
 
 
