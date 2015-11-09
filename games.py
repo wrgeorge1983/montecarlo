@@ -189,12 +189,26 @@ def bpf_mg_midnight_craps_round(**kwargs):
     return kwargs
 
 
-def bpf_roulette_thirds_game(**kwargs):
+def bpf_mg_roulette_thirds_game(**kwargs):
     initial_wager = kwargs['initial_wager']
     initial_funds = kwargs['initial_funds']
-    return
+    kwargs['current_funds'] = initial_funds
+    kwargs['current_wager'] = initial_wager
+    kwargs['last_winnings'] = kwargs['last_wager'] = 0
+    kwargs['net_worth_points'] = []
 
-def bpf_roulette_thirds_round(**kwargs):
+    rounds_per_game = kwargs['rounds_per_game']
+    g_rounds = range(1, rounds_per_game + 1)
+    kwargs['losing_streak'] = 1
+
+    for round_number in g_rounds:
+        kwargs['current_round'] = round_number
+        kwargs = bpf_mg_roulette_thirds_round(**kwargs)
+
+    return kwargs
+
+
+def bpf_mg_roulette_thirds_round(**kwargs):
     current_funds = kwargs['current_funds']
     if current_funds <= 0:
         return kwargs
@@ -203,7 +217,7 @@ def bpf_roulette_thirds_round(**kwargs):
     last_winnings = kwargs['last_winnings']
     round_number = kwargs['current_round']
     losing_streak = kwargs['losing_streak']
-    odds = 3
+    odds = 2
 
     # place bet
     progression_type = kwargs['progression_type']  #'unit', 'ratio', None
@@ -221,8 +235,8 @@ def bpf_roulette_thirds_round(**kwargs):
     current_funds -= current_wager
 
     # roll dice
-    dice = random.randint(1, 6), random.randint(1, 6)
-    if sum(dice) == 12:
+    ball = random.randint(-1, 36)
+    if ball in range(25,37):
         winnings = current_wager * (odds + 1)
         losing_streak = 0
     else:

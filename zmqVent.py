@@ -54,7 +54,7 @@ def safe_input(rtype, prompt=None):
             return user_input
 
 default_bpf_kwargs = {
-    'game': 'bpf_mg_midnight_craps_game',
+    'game': 'bpf_mg_roulette_thirds_game',
     'game_sample_size': 5000,
     'rounds_per_game': 150,
     #'progression': False,
