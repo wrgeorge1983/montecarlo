@@ -166,7 +166,7 @@ bank_schemes = {
 game_map = {
     'bpf_midnight_craps': games.bpf_midnight_craps_game,
     'bpf_mg_midnight_craps_game': games.bpf_mg_midnight_craps_game,
-    'bpf_roulette_thirds': games.bpf_roulette_thirds_game,
+    'bpf_mg_roulette_thirds': games.bpf_mg_roulette_thirds_game,
 }
 
 def basic_player_func(**kwargs):
