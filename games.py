@@ -1,5 +1,3 @@
-import random
-
 __author__ = 'William R. George'
 
 try:
@@ -109,7 +107,7 @@ def bpf_midnight_craps_round(**kwargs):
     current_funds -= current_wager
 
     # roll dice
-    dice = random.randint(1, 6), random.randint(1, 6)
+    dice = randint(1, 6), randint(1, 6)
     if sum(dice) == 12:
         winnings = current_wager * odds
     else:
@@ -173,7 +171,7 @@ def bpf_mg_midnight_craps_round(**kwargs):
     current_funds -= current_wager
 
     # roll dice
-    dice = random.randint(1, 6), random.randint(1, 6)
+    dice = randint(1, 6), randint(1, 6)
     if sum(dice) == 12:
         winnings = current_wager * (odds + 1)
         losing_streak = 0
@@ -239,7 +237,7 @@ def bpf_mg_roulette_thirds_round(**kwargs):
     current_funds -= current_wager
 
     # roll dice
-    ball = random.randint(-1, 36)
+    ball = randint(-1, 36)
     if ball in range(25,37):
         winnings = current_wager * (odds + 1)
         losing_streak = 0

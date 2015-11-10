@@ -13,11 +13,12 @@ try:
 except:
     from statistics import mean
 
-import statistics
 from time import time
 from timeit import timeit
-import random
-import zmq
+try:
+    from numpy.random import randint, uniform
+except:
+    from random import randint, uniform
 
 import games
 from martingale_bettors import SimpleWorkingBettor
@@ -25,7 +26,7 @@ from montecarlo_core import basic_player_func
 
 
 def roll_craps():
-    return random.randint(1, 6), random.randint(1, 6)
+    return randint(1, 6), randint(1, 6)
 
 
 def roll_against_midnight():
@@ -46,7 +47,7 @@ def play(initial_funds, initial_wager, wager_count, bettor_class, game, **kwargs
 
 def mp_play(lose_multiple):
     if lose_multiple is None:
-        lose_multiple = round(random.uniform(1.1, 5.0), 2)
+        lose_multiple = round(uniform(1.1, 5.0), 2)
     args = [initial_funds, initial_wager, wager_count, bettor_class, game]
     kwargs = {'lose_multiple': lose_multiple}
     return [play(*args, **kwargs) for _ in range(player_sample_size)]
@@ -86,11 +87,11 @@ def calc_stats(player_group, max_death_rate=100):
         net_worth_list.append(net_worth)
 
     stats['death_rate'] = stats['dead'] / stats['members'] * 100.0
-    stats['avg_nw'] = statistics.mean(net_worth_list) if net_worth_list else 0
-    stats['avg_nb_nw'] = statistics.mean(non_bust_nw_list) if non_bust_nw_list else 0
+    stats['avg_nw'] = mean(net_worth_list) if net_worth_list else 0
+    stats['avg_nb_nw'] = mean(non_bust_nw_list) if non_bust_nw_list else 0
 
     stats['profit_rate'] = len(profit_nw_list) / stats['members'] * 100
-    stats['avg_p_nw'] = statistics.mean(profit_nw_list) if profit_nw_list else 0
+    stats['avg_p_nw'] = mean(profit_nw_list) if profit_nw_list else 0
 
     return stats
 
@@ -116,11 +117,11 @@ def calc_stats_bpf(**kwargs):
         net_worth_list.append(net_worth)
 
     stats['death_rate'] = stats['dead'] / stats['members'] * 100.0
-    stats['avg_nw'] = statistics.mean(net_worth_list) if net_worth_list else 0
-    stats['avg_nb_nw'] = statistics.mean(non_bust_nw_list) if non_bust_nw_list else 0
+    stats['avg_nw'] = mean(net_worth_list) if net_worth_list else 0
+    stats['avg_nb_nw'] = mean(non_bust_nw_list) if non_bust_nw_list else 0
 
     stats['profit_rate'] = len(profit_nw_list) / stats['members'] * 100
-    stats['avg_p_nw'] = statistics.mean(profit_nw_list) if profit_nw_list else 0
+    stats['avg_p_nw'] = mean(profit_nw_list) if profit_nw_list else 0
 
     del stats['player_group']
 
@@ -209,8 +210,8 @@ if __name__ == '__main__':
     #         non_bust_nw_list = [net_worth for net_worth in net_worth_list if net_worth > 0]
     #         profit_nw_list = [net_worth for net_worth in net_worth_list if net_worth > initial_funds]
     #
-    #         nb_avg = statistics.mean(non_bust_nw_list)
-    #         profit_avg = statistics.mean(profit_nw_list)
+    #         nb_avg = mean(non_bust_nw_list)
+    #         profit_avg = mean(profit_nw_list)
     #
     #         print("{} {} survivor's worth: {:.2f}".format(title, len(non_bust_nw_list), nb_avg))
     #         print("{} {} profiter's worth: {:.2f}".format(title, len(profit_nw_list), profit_avg))
