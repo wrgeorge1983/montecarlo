@@ -169,6 +169,7 @@ game_map = {
     'bpf_mg_roulette_thirds': games.bpf_mg_roulette_thirds_game,
 }
 
+
 def basic_player_func(**kwargs):
     history = kwargs.copy()
     kwargs['history'] = history

@@ -2,8 +2,10 @@ __author__ = 'William R. George'
 
 try:
     from numpy.random import randint, uniform
+    from numpy import array
 except:
     from random import randint, uniform
+
 
 
 
@@ -77,6 +79,11 @@ def bpf_midnight_craps_game(**kwargs):
     for round_number in g_rounds:
         kwargs['current_round'] = round_number
         kwargs = bpf_midnight_craps_round(**kwargs)
+
+    try:
+        kwargs['net_worth_points'] = array(kwargs['net_worth_points'])
+    except:
+        pass
 
     return kwargs
 
