@@ -2,7 +2,11 @@ import random
 
 __author__ = 'William R. George'
 
-from random import randint, uniform
+try:
+    from numpy.random import randint, uniform
+except:
+    from random import randint, uniform
+
 
 
 class Game(object):

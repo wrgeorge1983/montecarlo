@@ -60,7 +60,7 @@ default_bpf_kwargs = {
     #'progression': False,
     'bank': False,
     'initial_wager': 5,
-    'initial_funds': 2000,
+    'initial_funds': 5000,
     'bank_balance': 0,
     'progression_type': 'ratio', # 'unit' or 'ratio' or None
     'progression_interval': 5,  # set these to zero when not progressing

@@ -8,6 +8,11 @@ except ImportError:
     pass
 import multiprocessing
 from pprint import pprint
+try:
+    from numpy import mean
+except:
+    from statistics import mean
+
 import statistics
 from time import time
 from timeit import timeit
