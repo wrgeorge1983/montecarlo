@@ -97,6 +97,7 @@ def calc_stats(player_group, max_death_rate=100):
 
 def calc_stats_bpf(**kwargs):
     stats = kwargs
+    initial_funds = stats['initial_funds']
 
 
     net_worth_list = []
