@@ -164,7 +164,7 @@ bank_schemes = {
 }
 
 game_map = {
-    'bpf_midnight_craps': games.bpf_midnight_craps_game,
+    # 'bpf_midnight_craps': games.bpf_midnight_craps_game,  Known Broken
     'bpf_mg_midnight_craps_game': games.bpf_mg_midnight_craps_game,
     'bpf_mg_roulette_thirds': games.bpf_mg_roulette_thirds_game,
 }
